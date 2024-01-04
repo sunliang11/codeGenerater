@@ -1,0 +1,70 @@
+package ${package}.${moduleName}.web;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import ${package}.${moduleName}.infra.BasicController;
+import ${package}.${moduleName}.infra.ErrorCode;
+import ${package}.${moduleName}.service.${className}Service;
+import ${package}.${moduleName}.service.VO.${className}VO;
+import yb.ecp.fast.infra.annotation.FastMappingInfo;
+import yb.ecp.fast.infra.infra.ActionResult;
+import yb.ecp.fast.infra.infra.SearchCommonVO;
+
+/**
+ * Created by Fast Generator.
+ */
+@RestController
+@RequestMapping("/${classname}")
+public class ${className}Controller extends BasicController{
+    @Autowired
+    ${className}Service ${classname}Service;
+
+    /**
+    * 分页查询
+    * @return
+    */
+    @RequestMapping(value = "list",method = RequestMethod.POST)
+    @FastMappingInfo()
+    public ActionResult list(@RequestBody SearchCommonVO<${className}VO> condition){
+        return actionResult(ErrorCode.Success, ${classname}Service.list(condition));
+    }
+
+    /**
+    * 列表查询，不分页
+    * @return
+    */
+    @RequestMapping(value = "volist",method = RequestMethod.POST)
+    @FastMappingInfo()
+    public ActionResult volist(@RequestBody ${className}VO filter){
+        return actionResult(ErrorCode.Success, ${classname}Service.volist(filter));
+    }
+
+    @RequestMapping(value = "detail",method = RequestMethod.GET)
+    @FastMappingInfo()
+    public ActionResult detail(String id) {
+        return actionResult(ErrorCode.Success, ${classname}Service.item(id));
+    }
+
+    /**
+    * 插入
+    * @return
+    */
+    @RequestMapping(value = "insert",method = RequestMethod.POST)
+    @FastMappingInfo()
+    public ActionResult insert(@RequestBody ${className}VO vo){
+        return actionResult(${classname}Service.insert(vo));
+    }
+
+    /**
+    * 更新
+    * @return
+    */
+    @RequestMapping(value = "update",method = RequestMethod.POST)
+    @FastMappingInfo()
+    public ActionResult update(@RequestBody ${className}VO vo){
+        return actionResult(${classname}Service.update(vo));
+    }
+}

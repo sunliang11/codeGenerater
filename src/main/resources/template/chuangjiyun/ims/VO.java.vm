@@ -1,0 +1,36 @@
+package ${package}.common.apo.vo;
+
+import java.util.Date;
+import java.util.List;
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+public class ${className}VO {
+#foreach ($column in $columns)
+#if($column.comments != '')
+    /**
+     * $column.comments
+     */
+#end
+    private $column.attrType $column.attrname;
+#end
+
+#foreach ($column in $columns)
+    public void set${column.attrName}($column.attrType $column.attrname) {
+	#if($column.attrType =='String')	this.$column.attrname = $column.attrname == null ? null : ${column.attrname}.trim();
+	#else	this.$column.attrname = $column.attrname;
+	#end}
+    public $column.attrType get${column.attrName}() {
+        return $column.attrname;
+    }
+#end
+}

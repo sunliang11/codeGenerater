@@ -1,0 +1,87 @@
+package ${package}.controller;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Date;
+
+import ${package}.infra.BasicController;
+import ${package}.infra.ErrorCode;
+import ${package}.service.${className}Service;
+import ${package}.service.vo.${className}VO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.bkrwin.ufast.infra.annotation.FastMappingInfo;
+import com.bkrwin.ufast.infra.infra.ActionResult;
+import com.bkrwin.ufast.infra.infra.PageCommonVO;
+import com.bkrwin.ufast.infra.infra.SearchCommonVO;
+
+import io.swagger.annotations.ApiOperation;
+
+
+
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ * 
+ * @author ${author}
+ * @email  ${email}
+ * @date   ${datetime}
+ */
+@RestController
+@RequestMapping("/${className}")
+@Api(tags="${comments}")
+public class ${className}Controller extends BasicController{
+	@Autowired
+	private ${className}Service ${classname}Service;
+
+    /**
+     * 详情
+     */
+    @ApiOperation(value = "${comments}详情接口")
+    @RequestMapping(value = "/item",method = RequestMethod.GET)
+    @FastMappingInfo()
+    public ActionResult<${className}VO> item(${pk.attrType} ${pk.attrname}){
+        ${className}VO ${classname}VO= ${classname}Service.item(${pk.attrname});
+        return actionResult(${classname}VO);
+    }
+
+    /**
+     * 列表
+     */
+    @ApiOperation(value = "${comments}列表接口")
+    @RequestMapping(value = "/list",method = RequestMethod.POST)
+    @FastMappingInfo()
+    public ActionResult<PageCommonVO<${className}VO>> list(@RequestBody SearchCommonVO<${className}VO> condition){
+        PageCommonVO pageCommonVO=${classname}Service.list(condition);
+        return actionResult(pageCommonVO.getPageInfo());
+    }
+
+    /**
+     * 新增
+     */
+    @ApiOperation(value = "${comments}新增接口")
+    @RequestMapping(value = "/insert",method = RequestMethod.POST)
+    @FastMappingInfo()
+    public ActionResult insert(@RequestBody ${className}VO ${classname}VO){
+        ErrorCode code = ${classname}Service.insert(${classname}VO);
+        return actionResult(code);
+    }
+
+    /**
+     * 更新
+     */
+    @ApiOperation(value = "${comments}更新接口")
+    @RequestMapping(value = "/update",method = RequestMethod.POST)
+    @FastMappingInfo()
+    public ActionResult update(@RequestBody ${className}VO ${classname}VO){
+        ErrorCode code=${classname}Service.update(${classname}VO);
+        return actionResult(code);
+    }
+
+}

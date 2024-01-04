@@ -1,0 +1,139 @@
+<div class="row m-n">
+    <div class="crumbs-bar">
+        <div yb-crumbs></div>
+    </div>
+    <div tabset type="tab">
+        <div tab heading="${comments}列表" active="activeFlag[0]" ng-click="changeTab(0)">
+            <div class="row wrapper-y-sm">
+                <div class="operate-bar col-xs-4 font-0">
+                    <button class="btn btn-operate m-r-sm" ng-click="addData()">新增</button>
+                    <button class="btn btn-operate" ng-click="delData('batch')">删除</button>
+                </div>
+                <div class="search-bar wrapper-none col-xs-8">
+                    <div class="btn-group m-l-xs pull-right">
+                        <button type="button" class="btn btn-default base-color" ng-click="search()" title="刷新">
+                            <i class="yb-icon ico-refresh"></i>
+                        </button>
+                        <button type="button" class="btn btn-default base-color" title="配置表格列"
+                                ng-click="switchToolbar('ColConfig');">
+                            <i class="yb-icon ico-set"></i>
+                        </button>
+                    </div>
+                    <button class="btn-advance pull-right m-l-xs" ng-click="switchToolbar('AdvanceSearch')">高级搜索</button>
+                    <div class="input-group pull-right clearfix">
+                        <input type="text" class="form-control txt-search" placeholder="设备名称" ng-model="condition.name">
+                        <span class="input-group-addon cursor-pointer" ng-click="search(1)">搜索</span>
+                    </div>
+                </div>
+            </div>
+            <div yb-advance-search show-toolbar="toolbarConfig.showAdvanceSearch" search-data="search(1)" reset-data="reset()">
+                <div class="advance-search m-t-sm">
+                    #foreach($column in $columns)
+                    <div class="form-group clearfix">
+                        <label class="control-label">$column.comments：</label>
+                        <input type="text" class="form-control"  ng-model="condition.$column.attrname">
+                    </div>
+                    #end
+                </div>
+            </div>
+            <div yb-col-config show-toolbar="toolbarConfig.showColConfig" ng-model="tableConfig" col-fixed="true"
+                 has-check-col="true" set-tb-style="setFixedWidth()"></div>
+            <div class="main-area">
+                <div yb-table-fixed class="table-fixed-wrap fix-left" ele-count="4" scroll-area="right">
+                    <div class="th-fixed">
+                        <table class="table-fixed border-none" width="{{tableConfig.fixedWidth}}">
+                            <thead>
+                            <tr>
+                                <th width="40" class="text-center border-l-none">
+                                    <div yb-check-box yb-checked="markInfo.allChecked" yb-click="selectAll()"></div>
+                                </th>
+                                <th ng-repeat="itemCol in tableConfig.tableCol track by $index" width="{{itemCol.width}}"
+                                    ng-click="toSort(tableConfig.tableCol, $index)"
+                                    ng-show="!!itemCol.isShow && !!itemCol.isFixed && itemCol.type !== 'operate'">
+                                    <div yb-thead-operate ng-model="itemCol" target-width="tableConfig.fixedWidth" fixed-width="tbStyle.scrollLeft"></div>
+                                </th>
+                                <th width="80" class="border-r-none">
+                                    操作
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="th-scroll-x" ng-style="tbStyle.scrollLeft">
+                        <table class="table-fixed border-none" width="{{tableConfig.scrollWidth}}">
+                            <thead>
+                            <tr>
+                                <th ng-repeat="itemCol in tableConfig.tableCol track by $index" width="{{itemCol.width}}"
+                                    ng-click="toSort(tableConfig.tableCol, $index)"
+                                    ng-show="!!itemCol.isShow && !itemCol.isFixed">
+                                    <div yb-thead-operate ng-model="itemCol" target-width="tableConfig.scrollWidth"></div>
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="td-scroll-y" ng-show="dataList.length > 0">
+                        <table class="table-fixed border-none" width="{{tableConfig.fixedWidth}}">
+                            <tbody>
+                            <tr ng-repeat="item in dataList track by $index" ng-class="{'row-selected': $index === markInfo.cueRow}"
+                                ng-click="selectRow($index)">
+                                <td width="40" class="text-center border-l-none">
+                                    <div yb-check-box yb-checked="item.isChecked" yb-click="selectSingle(item)"></div>
+                                </td>
+                                <td class="spill-dots" ng-repeat="itemCol in tableConfig.tableCol track by $index" width="{{itemCol.width}}"
+                                    ng-show="!!itemCol.isShow && !!itemCol.isFixed && itemCol.type !== 'operate'">
+                                    <span ng-show="!itemCol.isGoDetail">{{filterData(item[itemCol.dataField], itemCol.filter, itemCol.filterParam)}}</span>
+                                    <a ng-show="!!itemCol.isGoDetail" class="btn-operate" ng-click="goDetail(item.id)">{{filterData(item[itemCol.dataField], itemCol.filter, itemCol.filterParam)}}</a>
+                                </td>
+                                <td width="80" class="font-0">
+                                    <button class="btn btn-operate m-r-xs" ng-click="editData(item.id)">编辑</button>
+                                    <button class="btn btn-operate m-r-xs" ng-click="delData('single', item.id)">删除</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="td-scroll" ng-show="dataList.length > 0" ng-style="tbStyle.scrollLeft">
+                        <table class="table-fixed border-none" width="{{tableConfig.scrollWidth}}">
+                            <tbody>
+                            <tr ng-repeat="item in dataList track by $index" ng-class="{'row-selected': $index === markInfo.cueRow}"
+                                ng-click="selectRow($index)">
+                                <td class="spill-dots" ng-repeat="itemCol in tableConfig.tableCol track by $index" width="{{itemCol.width}}"
+                                    ng-show="!!itemCol.isShow && !itemCol.isFixed">
+                                    <span ng-show="!itemCol.isGoDetail">{{filterData(item[itemCol.dataField], itemCol.filter, itemCol.filterParam)}}</span>
+                                    <a ng-show="!!itemCol.isGoDetail" class="btn-operate" ng-click="goDetail(item.id)">{{filterData(item[itemCol.dataField], itemCol.filter, itemCol.filterParam)}}</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="no-data w-full text-center p-t" ng-show="dataList.length === 0">暂时没有数据</div>
+                </div>
+            </div>
+            <div class="bottom-area page-bar wrapper-y-sm clearfix">
+                <div yb-check-box class="m-t-xs m-r-sm" yb-checked="markInfo.allChecked" yb-check-name="全选" yb-click="selectAll()"></div>
+                <button class="btn btn-operate" ng-click="delData('batch')">删除</button>
+                <div yb-page-info ng-model="pageInfo" yb-refresh="search()"></div>
+            </div>
+        </div>
+
+
+        <div tab heading="详情" active="activeFlag[2]" ng-if="activeFlag[2]">
+            <div class="main-area d-t-35 d-b-60">
+                <form name="form" class="main-wrap form-horizontal single-col p-t clearfix" novalidate>
+                    #foreach($column in $columns)
+                    <div class="form-group">
+                        <label class="col-xs-2 control-label">$column.comments：</label>
+                        <div class="col-xs-5 wrapper-none">
+                            <div class="txt-show p-t-xs">{{detailInfo.$column.attrname}}</div>
+                        </div>
+                    </div>
+                    #end
+                </form>
+            </div>
+            <div class="bottom-area btn-bar single-col border-t clearfix">
+                <button type="button" class="btn btn-default" ng-click="changeTab(0)">返回</button>
+            </div>
+        </div>
+    </div>
+</div>

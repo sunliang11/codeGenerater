@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>物业开放平台-${comments}管理</title>
+    <script>
+        var base = "${base}";
+    </script>
+    <link rel="stylesheet" href="${base}/webstatic/css/version2/common.css"/>
+    <!-- 新版样式初始化-->
+    <link rel="stylesheet" href="${base}/webstatic/css/version2/edition2-init.css" type="text/css">
+    <!-- 新版样式公共部分-->
+    <link rel="stylesheet" href="${base}/webstatic/css/version2/edition2-common.css" type="text/css">
+    <!-- 新版样式单独样式-->
+    <link rel="stylesheet" href="${base}/webstatic/css/version2/edition2-style.css" type="text/css">
+    <!--tab-->
+    <link rel="stylesheet" href="${base}/webstatic/css/version2/TabStyle.css"/>
+
+    <script type="text/javascript" src="${base}/webstatic/js/SNplug.js"></script>
+    <script src="${base}/webstatic/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="${base}/webstatic/js/plugins/AjaxFileUploader/ajaxfileupload.js"></script>
+
+    <script src="${base}/webstatic/js/plugins/layer/layer.js"></script>
+    <script src="${base}/webstatic/js/plugins/layer/layer_extend.js"></script>
+
+    <script type="text/javascript" src="${base}/webstatic/js/community/communityEx.js"></script>
+    <style>
+        #list{
+
+        }
+        #edit{
+            display: none;
+        }
+        #item{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="listDiv">
+    <\#include "/views/${classname}List.ftl"/>
+</div>
+<div id="editDiv">
+</div>
+<div id="itemDiv">
+
+</div>
+</body>
+</html>

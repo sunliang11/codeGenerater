@@ -1,0 +1,18 @@
+package ${package}.${moduleName}.dao.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+import ${package}.${moduleName}.dao.entity.${className}DO;
+import ${package}.${moduleName}.service.VO.${className}VO;
+
+import java.util.List;
+
+@Mapper
+public interface ${className}Mapper extends BaseMapper<${className}VO,${className}DO>{
+    int insert(${className}DO record);
+
+    ${className}DO item(String id);
+
+    int update(${className}DO record);
+
+    List<${className}DO> list(${className}VO record);
+}

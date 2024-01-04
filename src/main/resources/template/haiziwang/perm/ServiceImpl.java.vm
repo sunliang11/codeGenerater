@@ -1,0 +1,123 @@
+package ${package}.service.impl;
+
+import ${package}.common.apo.querybean.${className}QueryBean;
+import ${package}.common.apo.vo.${className}VO;
+import ${package}.common.constant.UnionError;
+import ${package}.common.dbo.${className}DBO;
+import ${package}.common.util.bean.BeanUtil;
+import ${package}.common.util.bean.FunctionResult;
+import ${package}.service.api.I${className}Service;
+import ${package}.service.mapper.${className}Mapper;
+import net.jplugin.core.ctx.api.BindRuleService;
+import net.jplugin.core.das.api.PageCond;
+import net.jplugin.core.das.api.PageQueryResult;
+import net.jplugin.core.das.mybatis.api.RefMapper;
+import org.apache.commons.collections.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+	#if(${comments} && ${comments} != '')
+	 * ${comments}
+	#end
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+@BindRuleService(interfaceClass = I${className}Service.class)
+public class ${className}ServiceImpl implements I${className}Service{
+	@RefMapper
+    private ${className}Mapper ${classname}Mapper;
+
+	private List<${className}VO> getVOList(List<${className}DBO> dboList) {
+		List<${className}VO> voList = new ArrayList<>();
+		if (CollectionUtils.isEmpty(dboList)) {
+			return voList;
+		}
+		for (${className}DBO dbo : dboList) {
+			${className}VO vo = getVO(dbo);
+			voList.add(vo);
+		}
+		return voList;
+	}
+
+	private ${className}VO getVO(${className}DBO dbo){
+		${className}VO vo = new ${className}VO();
+		BeanUtil.copyProperties(vo, dbo);
+		return vo;
+	}
+
+	private ${className}DBO getDBO(${className}VO vo){
+		${className}DBO dbo = new ${className}DBO();
+		BeanUtil.copyProperties(dbo,vo);
+		return dbo;
+	}
+	
+	@Override
+	public PageQueryResult<${className}VO> queryByPage(${className}QueryBean queryBean){
+		int totalCount = ${classname}Mapper.pageCount(queryBean);
+		PageCond pageCond = queryBean.getPage();
+		pageCond.setShdCount(false);
+		pageCond.setCount(totalCount);
+
+		PageQueryResult<${className}VO> pageQueryResult = new PageQueryResult<>();
+		pageQueryResult.setPageCond(pageCond);
+		if (totalCount < 1) {
+			return pageQueryResult;
+		}
+		queryBean.setPageLimit(pageCond.getPageSize());
+		queryBean.setPageBegin((pageCond.getPageIndex() - 1) * pageCond.getPageSize());
+		List<${className}DBO> list = ${classname}Mapper.queryByPage(queryBean);
+
+		List<${className}VO> voList = getVOList(list);
+		pageQueryResult.setList(voList);
+		return pageQueryResult;
+	}
+
+	@Override
+	public FunctionResult<${className}VO> item(${pk.attrType} ${pk.attrname}){
+		if (${pk.attrname} == null) {
+			return new FunctionResult<>(UnionError.PARA_NULL_ERROR);
+		}
+		${className}DBO ${classname}DBO = ${classname}Mapper.item(id);
+		${className}VO ${classname}VO = getVO(${classname}DBO);
+		return new FunctionResult<>(${classname}VO);
+	}
+
+	
+	@Override
+	public UnionError add(${className}VO ${classname}VO){
+		if (${classname}VO == null) {
+			return UnionError.PARA_NULL_ERROR;
+		}
+		${className}DBO ${classname}DBO = getDBO(${classname}VO);
+		${classname}Mapper.insertSelective(${classname}DBO);
+		return UnionError.SUCCESS;
+	}
+	
+	@Override
+	public UnionError edit(${className}VO ${classname}VO){
+		if (${classname}VO == null) {
+			return UnionError.PARA_NULL_ERROR;
+		}
+		${className}DBO ${classname}DBO = getDBO(${classname}VO);
+		${classname}Mapper.updateByPrimaryKeySelective(${classname}DBO);
+		return UnionError.SUCCESS;
+	}
+
+	@Override
+	public UnionError delete(${pk.attrType} ${pk.attrname}){
+		if (${pk.attrname} == null) {
+			return UnionError.PARA_NULL_ERROR;
+		}
+		${classname}Mapper.deleteByPrimaryKey(${pk.attrname});
+		return UnionError.SUCCESS;
+	}
+}
+
+
+
+
+
+

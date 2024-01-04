@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sqlMap namespace="${tableName}" jdbcTimeout="3">
+
+<sql id="${classname}List">
+    <![CDATA[
+     select
+     #foreach($column in $columns)
+     	$column.columnName as $column.attrname#if($velocityCount != $columns.size()), #end
+
+     #end
+     from ${tableName}
+     where 1=1
+     #foreach($column in $columns)
+     <\#if vo.$column.attrname?exists && vo.$column.attrname!= ''>
+		 and $column.columnName = :vo.$column.attrname
+     </\#if>
+     #end
+	]]>
+    </sql>
+
+</sqlMap>

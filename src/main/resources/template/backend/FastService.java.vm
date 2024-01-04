@@ -1,0 +1,26 @@
+package ${package}.${moduleName}.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import ${package}.${moduleName}.dao.entity.${className}DO;
+import ${package}.${moduleName}.dao.mapper.${className}Mapper;
+import ${package}.${moduleName}.service.VO.${className}VO;
+
+import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
+
+/**
+ * Created by Fast Generator.
+ */
+@Service
+public class ${className}Service extends BaseService<${className}VO,${className}DO>{
+    @Autowired
+    ${className}Mapper ${classname}Mapper;
+
+    /*要使用基类的方法
+    需要通过构造函数指定vo do的类型
+    并预先将mapper指向基类的baseMapper*/
+    public ${className}Service(){super(${className}VO.class,${className}DO.class);};
+    @PostConstruct
+    public void init(){super.addMapper(${classname}Mapper);}
+}

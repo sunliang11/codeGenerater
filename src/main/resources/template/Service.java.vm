@@ -1,0 +1,50 @@
+package ${package}.service.${className}service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import ${package}.dao.entity.${className}DO;
+import ${package}.dao.mapper.${className}Mapper;
+import ${package}.service.vo.${className}VO;
+import ${package}.infra.ErrorCode;
+import ${package}.service.BaseService;
+
+import com.bkrwin.ufast.infra.infra.PageCommonVO;
+import com.bkrwin.ufast.infra.infra.SearchCommonVO;
+import javax.annotation.PostConstruct;
+
+@Service
+public class ${className}Service extends BaseService<${className}VO,${className}DO>{
+    @Autowired
+    private ${className}Mapper ${classname}Mapper;
+
+    public ${className}Service(){super(${className}VO.class,${className}DO.class);};
+
+    @PostConstruct
+    public void init(){super.addMapper(${classname}Mapper);}
+
+	@Override
+	public ${className}VO item(${pk.attrType} ${pk.attrname}){
+		return super.item(${pk.attrname});
+	}
+	
+	@Override
+	public PageCommonVO list(SearchCommonVO<${className}VO> condition){
+		return super.list(condition);
+	}
+	
+	@Override
+	public ErrorCode insert(${className}VO ${classname}VO){
+		return super.insert(${classname}VO);
+	}
+	
+	@Override
+	public ErrorCode update(${className}VO ${classname}VO){
+		return super.update(${classname}VO);
+	}
+}

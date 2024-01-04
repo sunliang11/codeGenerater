@@ -1,0 +1,158 @@
+<style>
+    div.layui-layer.layui-layer-loading {
+        width: 60px;
+    }
+</style>
+
+<div class="nav-pos">
+    <span class="c9">当前位置：</span>
+    <a href="${base}">首页</a> &gt; 物业经营收入管理 &gt; ${comments}管理
+</div>
+<div class="common-title">${comments}管理</div>
+<form id="searchForm" method="post">
+    <input type="hidden" id="pageSize" name="pageSize" value="10">
+    <div class=" module_part">
+
+        <ul class="ul-search clearfix" style="width: 80%;">
+            <li class="part">
+                <span>点位名称：</span>
+                <input type="text" name="pointName" id="pointName"/>
+            </li>
+        </ul>
+        <div class="Search_positioning_r">
+            <button class="btn btn_on" type="button" id="searchBill" onclick="search1()">查询</button>
+            <button class="btn" type="reset" value="Reset" onclick="clean('searchForm')">清空</button>
+        </div>
+    </div>
+    <div class="module_part">
+        <div class="mt30 clearfix">
+            <button class="btn btn_on mr10 fr" type="button"
+                    onclick="add('')">新增
+            </button>
+            <button class="btn btn_on mr10 fr" onclick="exportList()">导出</button>
+        </div>
+        <div id="billDiv" class="showTableCon">
+            <\#include "/views/${classname}Table.ftl"/>
+        </div>
+        <script type="text/javascript">
+           //列表页面，点击分页
+            function jumpPage(currPage, url) {
+                var pageCount = $("#pageCount").val();
+                pageCount = parseInt(pageCount);
+                currPage = parseInt(currPage);
+                if (currPage > pageCount) {
+                    currPage = pageCount;
+                }
+                if (currPage < 1 || isNaN(currPage)) {
+                    currPage = 1;
+                }
+                $("#page").val(currPage);
+                reloadDataSource(url);
+            }
+
+            //手动设置分页个数
+            function setPageSize(url) {
+                var pageSize = $("#newPageSize").val();
+                $("#pageSize").val(pageSize);
+                $("#page").val('1');
+                reloadDataSource(url);
+            }
+
+            /** 表单序列化成json字符串的方法  */
+            function form2JsonStringCondition(formId) {
+                var paramArray = $('#' + formId).serializeArray();
+                /*请求参数转json对象*/
+                var filter = {};
+                var condition = {};
+
+                $(paramArray).each(function () {
+                    if (this.name == "page") {
+                        condition["page"] = this.value;
+                    } else if (this.name == "pageSize") {
+                        condition["pageSize"] = this.value;
+                    } else {
+                        filter[this.name] = this.value;
+                    }
+                });
+                condition["object"] = filter;
+
+                console.log("filter:" + filter);
+                console.log("condition:" + condition);
+                // json对象再转换成json字符串
+                return JSON.stringify(condition);
+            }
+
+            //重新获取数据源
+            function reloadDataSource(url) {
+                var paramData = form2JsonStringCondition("searchForm");
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    contentType: "application/json;charset=UTF-8",
+                    data: paramData,
+                    dataType: "html",
+                    success: function (data) {
+                        $("#billDiv").html(data);
+                        sideBarHeight();
+                    },
+                    error: function (error) {
+                        message.error("网络异常，请稍后再试！");
+                    }
+                });
+            }
+
+            /**
+             * 查询
+             */
+            function search1() {
+                reloadDataSource('${base}/${classname}/ajax/tableView.action');
+            }
+
+            /**
+             * 清空
+             * @param cleanid
+             */
+            function clean(cleanid) {
+                var thisform = $("#" + cleanid + "");
+                $('.proportion_block').css("display", "none");
+                $('.money_block').css("display", "none");
+                thisform.find("input[type=radio]").each(function () {
+                    $(this).removeAttr("checked");
+                });
+                thisform.find("input[type=text]").each(function () {
+                    $(this).val("");
+                });
+                thisform.find("select").each(function () {
+                    $(this).val('');
+                });
+                thisform.find("textarea").each(function () {
+                    $(this).val('');
+                });
+                thisform.find(".upload_group").html("");
+            }
+
+            function exportList() {
+                $("#searchForm").attr("action", base + "/${classname}/exportList.action");
+                $("#searchForm").submit();
+            }
+
+            function add(id) {
+                $("#listDiv").css("display", "none");
+                $("#editDiv").css("display", "block");
+
+                $.ajax({
+                    url: base + "/${classname}/ajax/editView.action?id=" + id,
+                    type: "GET",
+                    dataType: "html",
+                    success: function (data) {
+                        $("#editDiv").html(data);
+                    },
+                    error: function (error) {
+                        message.error("网络异常，请稍后再试！");
+                    }
+                });
+            }
+
+        </script>
+    </div>
+</form>

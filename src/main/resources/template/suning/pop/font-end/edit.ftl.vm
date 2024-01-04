@@ -1,0 +1,122 @@
+<script type="text/javascript" src="${base}/webstatic/js/plugins/AjaxFileUploader/ajaxfileupload.js"></script>
+<style>
+
+</style>
+
+<div class="nav-pos"><span class="c9">当前位置：</span><a href="${base}">首页</a> &gt;收入管理 &gt;新增${comments}
+</div>
+<div class="common-title">新增\编辑${comments}</div>
+<form id="paramsForm" method="post">
+</form>
+<div class="module_block">
+    <div class="module_part">
+        <div class="new_template">
+            <form id="saveForm" method="post">
+                <input type="hidden" name="${pk.attrname}" value="${${classname}VO.${pk.attrname}!''}">
+                <div class="top_moudel">
+                    <span class="">名称：</span>
+                    <input type="text"
+                           name="pointName"
+                           id="editPointName"
+                           placeholder="请输入名称"
+                           value=""
+                    />
+                </div>
+                <div class="textC">
+                    <button type="button" class="btn btn_on mt10 mr10 promptly_charge new_confirm" onclick="submit1()">
+                        确定
+                    </button>
+                    <button type="button" class="btn mt10 promptly_charge new_cancel" onclick="back()">取消</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    //提交
+    function submit1() {
+        if (!checkVaild()) {
+            return;
+        }
+        message.confirm("提示", "确定提交吗?", ["确定 ", "取消"], "", submitOk, commCancel);
+    }
+
+    //返回
+    function back() {
+        message.confirm("提示", "确定取消吗?", ["确定 ", "取消"], "", goMainView, commCancel);
+    }
+
+    function commCancel(index) {
+        layer.close(index);
+    }
+
+    function checkVaild() {//todo 模板中加入check的标签，通过查找有check的元素进行校验
+       //todo
+        return true;
+    }
+
+    /** 表单序列化成json字符串的方法  */
+    function form2JsonString(formId) {
+        var paramArray = $('#' + formId).serializeArray();
+        /*请求参数转json对象*/
+        var jsonObj = {};
+        $(paramArray).each(function () {
+            jsonObj[this.name] = this.value;
+        });
+        console.log(jsonObj);
+        // json对象再转换成json字符串
+        return JSON.stringify(jsonObj);
+    }
+
+    function submitOk() {
+        console.log('开始提交');
+        var param = form2JsonString("saveForm");
+        //加个遮罩
+
+        var loading = layer.msg('正在提交中...', {
+                icon: 16,
+                shade: [0.00001, '#000'],
+                scrollbar: false,
+                time: 0
+            }
+        );
+
+        console.log(param);
+        // 提交
+        var ajaxRequest = $.ajax({
+            url: "${base}/${classname}/save.action",
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json;charset=UTF-8",
+            data: param,
+            success: function (data) {
+                if (data.code != 0) {
+                    message.no_btn("提示", data.message);
+                    return;
+                }
+                message.confirm("提示", data.message, ["确定"], "", goMainView, null);
+            },
+            error: function (error) {
+                message.error("网络异常，请稍后再试！");
+                console.log(error);
+            }
+        });
+
+        $.when(ajaxRequest).done(function () {
+            layer.close(loading);
+        });
+    }
+
+    function goMainView() {
+        $("#listDiv").css("display", "block");
+        search1();
+        $("#editDiv").css("display", "none");
+        layer.close(layer.index);
+
+    }
+
+
+</script>

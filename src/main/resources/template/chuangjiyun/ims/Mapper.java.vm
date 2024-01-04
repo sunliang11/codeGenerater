@@ -1,0 +1,33 @@
+package ${package}.service.mapper;
+
+import ${package}.common.dbo.${className}DBO;
+import ${package}.common.apo.querybean.${className}QueryBean;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Mapper
+public interface ${className}Mapper {
+
+    int insertSelective(${className}DBO ${classname}DBO);
+
+    int updateByPrimaryKeySelective(${className}DBO ${classname}DBO);
+
+    int deleteByPrimaryKey(${pk.attrType} ${pk.attrname});
+
+    int pageCount(${className}QueryBean queryBean);
+
+    List<${className}DBO> queryByPage(${className}QueryBean queryBean);
+
+    List<${className}DBO> list(${className}QueryBean queryBean);
+
+    ${className}DBO item(${pk.attrType} ${pk.attrname});
+
+}

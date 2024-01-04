@@ -1,0 +1,66 @@
+package ${package}.web.ctrl;
+
+import ${package}.service.api.I${className}Service;
+import ${package}.common.util.bean.FunctionResult;
+
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ * 
+ * @author ${author}
+ * @date   ${datetime}
+ */
+@RestController
+@RequestMapping(path = "/${classname}")
+public class ${className}Controller extends BaseController {
+
+    @Autowired
+    private I${className}Service ${classname}Service;
+
+    /**
+     * 详情
+     */
+    @RequestMapping(value = "/item",method = RequestMethod.GET)
+    public ActionResult<${className}VO> item(${pk.attrType} ${pk.attrname}){
+        FunctionResult<${className}VO> functionResult = ${classname}Service.item(${pk.attrname});
+        if (functionResult.getErrorEnum().fail()) {
+            return actionResult(functionResult.getErrorEnum());
+        }
+        return actionResult(functionResult.getValue());
+    }
+
+    /**
+     * 分页列表
+     */
+    @RequestMapping(value = "/list",method = RequestMethod.POST)
+    public ActionResult<PageQueryResult<${className}VO>> queryPageList(@RequestBody ${className}QueryBean condition){
+        PageQueryResult<${className}VO> pageQueryResult=${classname}Service.queryByPage(condition);
+        return actionResult(pageQueryResult);
+    }
+
+    /**
+     * 新增
+     */
+    @RequestMapping(value = "/add",method = RequestMethod.POST)
+    public ActionResult<Void> add(@RequestBody ${className}VO ${classname}VO){
+        ErrorCode code = ${classname}Service.add(${classname}VO);
+        return actionResult(code);
+    }
+
+    /**
+     * 更新
+     */
+    @RequestMapping(value = "/edit",method = RequestMethod.POST)
+    public ActionResult<Void> edit(@RequestBody ${className}VO ${classname}VO){
+        ErrorCode code=${classname}Service.edit(${classname}VO);
+        return actionResult(code);
+    }
+
+    @RequestMapping(value = "/delete",method = RequestMethod.GET)
+    public ActionResult<Void> delete(${pk.attrType} ${pk.attrname}){
+        ErrorCode code=${classname}Service.delete(${pk.attrname});
+        return actionResult(code);
+    }
+}

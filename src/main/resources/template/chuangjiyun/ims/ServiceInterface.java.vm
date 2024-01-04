@@ -1,0 +1,29 @@
+package ${package}.service.api;
+
+import ${package}.common.apo.vo.${className}VO;
+import ${package}.common.apo.querybean.${className}QueryBean;
+import ${package}.common.constant.ErrorCode;
+import ${package}.common.dbo.${className}DBO;
+import ${package}.common.util.bean.FunctionResult;
+
+/**
+#if(${comments} && ${comments} != '')
+* ${comments}
+#end
+*
+* @author ${author}
+* @date ${datetime}
+*/
+public interface I${className}Service {
+
+    PageQueryResult<${className}VO> queryByPage(${className}QueryBean condition);
+
+    FunctionResult<${className}VO> item(${pk.attrType} ${pk.attrname});
+
+    ErrorCode add(${className}VO ${classname}VO);
+
+    ErrorCode edit(${className}VO ${classname}VO);
+
+    ErrorCode delete(${pk.attrType} ${pk.attrname});
+
+}

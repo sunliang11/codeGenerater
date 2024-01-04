@@ -1,0 +1,59 @@
+package ${package}.service.${className}service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.suning.zytcl.common.page.GenericPage;
+import com.suning.zytcl.common.page.PageList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import ${package}.base.infra.ErrorCode;
+import ${package}.service.infra.AbstractBaseService;
+
+import ${package}.dao.entity.${className}Entity;
+import ${package}.dao.mapper.${className}Dao;
+import ${package}.service.vo.${className}VO;
+
+@Service
+public class ${className}Service extends AbstractBaseService<${className}VO,${className}Entity,${pk.attrType}>{
+    private static final Logger LOGGER = LoggerFactory.getLogger(${className}Service.class);
+
+    @Autowired
+    private ${className}Dao ${classname}Dao;
+
+    @Override
+    protected void init() {
+        super.init(${className}VO.class, ${className}Entity.class, ${classname}Dao);
+    }
+
+    @Override
+    public PageList<${className}VO> pageList(GenericPage<${className}VO> condition) {
+        return super.pageList(condition);
+    }
+
+    @Override
+    public List<${className}VO> voList(${className}VO ${classname}VO) {
+        return super.voList(${classname}VO);
+    }
+
+    @Override
+    public ErrorCode insert(${className}VO ${classname}VO) {
+        return super.insert(${classname}VO);
+    }
+
+    @Override
+    public ErrorCode update(${className}VO ${classname}VO) {
+        return super.update(${classname}VO);
+    }
+
+    @Override
+    public ${className}VO item(${pk.attrType} ${pk.attrname}) {
+        return super.item(${pk.attrname});
+    }
+
+}

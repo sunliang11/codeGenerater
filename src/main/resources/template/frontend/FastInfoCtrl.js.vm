@@ -1,0 +1,319 @@
+;
+(function (window, angular) {
+    'use strict';
+    angular.module("Controller.${module}.Manage")
+        .controller("${className}InfoCtrl", ["$scope", "$state", "ybWidget", "ybHttp", "MESG_TYPE", "UserContextService", "$timeout", function ($scope, $state, ybWidget, ybHttp, MESG_TYPE, UserContextService, $timeout) {
+            $scope.activeFlag = [true, false, false];
+            $scope.markInfo = {
+                allChecked: false
+            };
+            $scope.pageInfo = {
+                totalPages: 1,
+                totalRows: 0,
+                pageSize: 10,
+                curPage: 1
+            };
+            $scope.submitted = false;
+            $scope.toolbarConfig = {
+                showAdvanceSearch: false,
+                showColConfig: false
+            };
+            $scope.condition = {};
+            $scope.dataList = [];
+            $scope.tabFlag = {};
+            var tabFlag = {
+                0: "新增",
+                1: "编辑"
+            };
+            $scope.tableConfig = {
+                scrollWidth: 1110,
+                fixedWidth: 120,
+                tableCol: [
+                    #foreach($column in $columns)
+                    {
+                        type: "",
+                            name: "$column.comments",
+                        dataField: "$column.attrname",
+                        width: 180,
+                        isShow: true,
+                        isFixed: false,
+                        filter: "",
+                        filterParam: "",
+                        toSort: false,
+                        sortType: "",
+                        isGoDetail: true
+                    },
+                    #end
+                ]
+            };
+            $scope.detailInfo = {};
+            $scope.dataPickerFlag = [false, false, false];
+            $scope.currSelection${className} = "";
+
+            $scope.setFixedWidth = function () {
+                $scope.tbStyle = {scrollLeft: {left: $scope.tableConfig.fixedWidth + "px"}};
+            };
+
+            $scope.filterData = ybWidget.DataFilter;
+
+            $scope.changeTab = function (index) {
+                $scope.activeFlag = [false, false, false];
+                $scope.activeFlag\[index\] = true;
+                $scope.submitted = false;
+                switch (index) {
+                    case 0:
+                        initData();
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        break;
+                }
+            };
+
+            function initData() {
+                $scope.tabFlag = {};
+                $scope.detailInfo = {};
+                $scope.currSelectionDevice = "";
+            }
+
+            function getDataList(curPage) {
+                var service = "order";
+                var reqUrl = "/${className}/list";
+                var param = {};
+                param.pageSize = $scope.pageInfo.pageSize;
+                if (!!curPage) {
+                    $scope.pageInfo.curPage = curPage;
+                }
+                param.pageNum = $scope.pageInfo.curPage;
+                param.filters = angular.copy($scope.condition);
+                ybHttp.Post(service, reqUrl, param).then(function (resp) {
+                    if (resp.code !== 0) {
+                        ybWidget.ShowMessage(resp, MESG_TYPE.Error);
+                        return;
+                    }
+                    angular.forEach(resp.value.list, function (item) {
+                        item.isChecked = false;
+                    });
+                    $scope.pageInfo.totalRows = resp.value.total;
+                    $scope.pageInfo.totalPages = resp.value.pages;
+                    $scope.dataList = resp.value.list;
+                });
+            }
+
+            $scope.toSort = function (config, index) {
+                ybWidget.ToSort(config, index);
+            };
+
+            $scope.switchToolbar = function (toolbar) {
+                if (!!$scope.toolbarConfig\["show" + toolbar\]) {
+                    $scope.toolbarConfig\["show" + toolbar\] = false;
+                } else {
+                    $timeout(function () {
+                        $scope.toolbarConfig\["show" + toolbar\] = true;
+                    });
+                }
+            };
+
+            $scope.selectRow = function (index) {
+                $scope.markInfo.cueRow = index
+            };
+
+            $scope.search = function (curpage) {
+                getDataList(curpage);
+            };
+
+            $scope.reset = function () {
+                $scope.condition = {};
+            };
+
+            $scope.selectAll = function () {
+                for (var i = 0, len = $scope.dataList.length; i < len; i++) {
+                    $scope.dataList\[i\].isChecked = $scope.markInfo.allChecked;
+                }
+            };
+
+            function checkAll() {
+                var selectAll = false;
+                for (var i = 0, len = $scope.dataList.length; i < len; i++) {
+                    if (!$scope.dataList\[i\].isChecked) {
+                        selectAll = false;
+                        break;
+                    }
+                    selectAll = true;
+                }
+                return selectAll;
+            }
+
+            $scope.selectSingle = function (item) {
+                if (!item.isChecked) {
+                    $scope.markInfo.allChecked = false;
+                } else {
+                    if (!checkAll()) {
+                        $scope.markInfo.allChecked = false;
+                    } else {
+                        $scope.markInfo.allChecked = true;
+                    }
+                }
+            };
+
+            // 切换日历显示
+            $scope.switchDataPicker = function (index) {
+                $scope.dataPickerFlag = [false, false, false];
+                $scope.dataPickerFlag\[index\] = true;
+            };
+
+            // 检查时间
+            $scope.checkDate = function (item, start, end, format) {
+                if (angular.isUndefined(item[start]) || !item[start] || angular.isUndefined(item[end]) || !item[end]) {
+                    return;
+                }
+                var tmpTime = item[start];
+                if (item[end] < item[start]) {
+                    item[start] = !!format ? ybWidget.FormatStartDate(item[end]) : item[end];
+                    item[end] = !!format ? ybWidget.FormatStartDate(tmpTime) : tmpTime;
+                }
+            };
+
+            $scope.selectEquipment = function () {
+                var param = {
+                    name: "设备列表",
+                    type: "equipment"
+                };
+                ybWidget.SingleSelector(param).then(function (data) {
+                    $scope.detailInfo.equiId = data.id;
+                    $scope.currSelectionDevice = data.id + " " +data.name;
+                })
+            };
+
+            $scope.clearCurrSelectionDevice = function (){
+                $scope.currSelectionDevice = "";
+                $scope.detailInfo.equiId = null;
+            };
+
+            $scope.addData = function () {
+                $scope.tabFlag.type = 0;
+                $scope.tabFlag.name = tabFlag[0];
+                $scope.changeTab(1);
+            };
+
+            $scope.goDetail = function (id) {
+                var service = "order";
+                var reqUrl = "/${className}}/detail";
+                var param = {};
+                param.id = id;
+                ybHttp.Get(service, reqUrl, param).then(function (resp) {
+                    if (resp.code !== 0) {
+                        ybWidget.ShowMessage(resp, MESG_TYPE.Error);
+                        return;
+                    }
+                    $scope.detailInfo = angular.copy(resp.value);
+                    setValue(resp.value);
+                    $scope.changeTab(2);
+                });
+            };
+
+            $scope.editData = function (id) {
+                $scope.tabFlag.type = 1;
+                $scope.tabFlag.name = tabFlag[1];
+                var service = "order";
+                var reqUrl = "/${className}/update";
+                var param = {};
+                param.id = id;
+                ybHttp.Get(service, reqUrl, param).then(function (resp) {
+                    if (resp.code !== 0) {
+                        ybWidget.ShowMessage(resp, MESG_TYPE.Error);
+                        return;
+                    }
+                    $scope.detailInfo = angular.copy(resp.value);
+                    setValue(resp.value);
+                    $scope.changeTab(1);
+                });
+            };
+
+            function setValue(data) {
+                $scope.currSelectionDevice = data.equiId + " " + data.name;
+                $scope.detailInfo.maintainDate = !data.maintainDate ? "" : new Date(data.maintainDate);
+                $scope.detailInfo.nextDate = !data.nextDate ? "" : new Date(data.nextDate);
+            }
+
+            $scope.delData = function (delType, id) {
+                var service = "order";
+                var reqUrl = "/${className}/delete";
+                var param = {};
+                param.ids = [];
+                if (delType === "single") {
+                    param.ids.push(id);
+                }
+                if (delType === "batch") {
+                    for (var i = 0, len = $scope.dataList.length; i < len; i++) {
+                        if (!!$scope.dataList\[i\].isChecked) {
+                            param.ids.push($scope.dataList\[i\].id);
+                        }
+                    }
+                    if (param.ids.length === 0) {
+                        ybWidget.ShowMessage('请选择需要删除的行');
+                        return;
+                    }
+                }
+                ybWidget.ShowMessage("确定要删除吗？", MESG_TYPE.Ask).then(function () {
+                    var selectedLength = param.ids.length;
+                    ybHttp.Post(service, reqUrl, param.ids).then(function (resp) {
+                        if (resp.code !== 0) {
+                            if (!!resp.value && resp.value.length > 0) {
+                                var list = [];
+                                for (var i = 0; i < resp.value.length; i++) {
+                                    if (resp.value[i].code !== 0) {
+                                        list.push(resp.value[i]);
+                                    }
+                                }
+                                resp.value = angular.copy(list);
+                                ybWidget.ShowMessageList(resp, MESG_TYPE.Error, {}, "", "设备代码", selectedLength).then(function () {
+                                    $scope.state.selectAll = false;
+                                    getDataList();
+                                });
+                                return;
+                            }
+                            ybWidget.ShowMessageList(resp, MESG_TYPE.Error);
+                            return;
+                        }
+                        ybWidget.ShowToaster("success", "操作成功");
+                        $scope.state.selectAll = false;
+                        getDataList();
+                    })
+                });
+            };
+
+            $scope.saveData = function (isValid) {
+                if (!isValid) {
+                    $scope.submitted = true;
+                    return;
+                }
+                var service = "order";
+                var reqUrl = "/${className}}/insert";
+                var param = {};
+                if ($scope.tabFlag.type === 1) {
+                    reqUrl = "/${className}}/update";
+                }
+                param = angular.copy($scope.detailInfo);
+                ybHttp.Post(service, reqUrl, param).then(function (resp) {
+                    if (resp.code !== 0) {
+                        ybWidget.ShowMessage(resp, MESG_TYPE.Error);
+                        return;
+                    }
+                    ybWidget.ShowToaster('success', '操作成功');
+                    $scope.changeTab(0);
+                    getDataList();
+                    $scope.markInfo.allChecked = false;
+                });
+            };
+
+            (function () {
+                getDataList();
+                $scope.setFixedWidth();
+            })();
+        }])
+    ;
+})(window, window.angular);

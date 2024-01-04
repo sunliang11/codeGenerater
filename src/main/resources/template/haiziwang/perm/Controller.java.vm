@@ -1,0 +1,78 @@
+package ${package}.web.ctrl;
+
+import ${package}.common.apo.querybean.${className}QueryBean;
+import ${package}.common.apo.vo.${className}VO;
+import ${package}.common.constant.UnionError;
+import ${package}.common.exception.RemoteExecuteResultException;
+import ${package}.common.web.BaseAbstractExController;
+import ${package}.service.api.I${className}Service;
+import net.jplugin.core.ctx.api.RefRuleService;
+import net.jplugin.core.das.api.PageQueryResult;
+import net.jplugin.ext.webasic.api.BindServiceExport;
+import net.jplugin.ext.webasic.api.Para;
+import ${package}.common.util.bean.FunctionResult;
+
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ * 
+ * @author ${author}
+ * @date   ${datetime}
+ */
+@BindServiceExport(path = "/${classname}")
+public class ${className}Controller extends BaseAbstractExController{
+
+    @RefRuleService
+    private I${className}Service ${classname}Service;
+
+    /**
+     * 详情
+     */
+    public ${className}VO item(@Para(name = "${pk.attrname}") ${pk.attrType} ${pk.attrname}){
+        FunctionResult<${className}VO> functionResult = ${classname}Service.item(${pk.attrname});
+        if (functionResult.getErrorEnum().fail()) {
+            throw new RemoteExecuteResultException(functionResult.getErrorEnum());
+        }
+        return functionResult.getValue();
+    }
+
+    /**
+     * 分页列表
+     */
+    public PageQueryResult<${className}VO> queryPageList(@Para(name = Para.FULL_MATCH) ${className}QueryBean condition){
+        PageQueryResult<${className}VO> pageQueryResult=${classname}Service.queryByPage(condition);
+        return pageQueryResult;
+    }
+
+    /**
+     * 新增
+     */
+    public void add(@Para(name = Para.FULL_MATCH) ${className}VO ${classname}VO){
+        UnionError code = ${classname}Service.add(${classname}VO);
+        if (code.fail()) {
+            throw new RemoteExecuteResultException(code);
+        }
+        return;
+    }
+
+    /**
+     * 更新
+     */
+    public void edit(@Para(name = Para.FULL_MATCH) ${className}VO ${classname}VO){
+        UnionError code=${classname}Service.edit(${classname}VO);
+        if (code.fail()) {
+            throw new RemoteExecuteResultException(code);
+        }
+        return;
+    }
+
+    public void delete(@Para(name = "${pk.attrname}") ${pk.attrType} ${pk.attrname}){
+        UnionError code=${classname}Service.delete(${pk.attrname});
+        if (code.fail()) {
+            throw new RemoteExecuteResultException(code);
+        }
+        return;
+    }
+}

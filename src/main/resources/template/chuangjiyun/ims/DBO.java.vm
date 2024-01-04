@@ -1,0 +1,33 @@
+package ${package}.common.dbo;
+
+import java.util.Date;
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+public class ${className}DBO {
+#foreach ($column in $columns)
+#if($column.comments != '' )
+    /**
+     * $column.comments
+     */
+#end
+    private $column.attrType $column.attrname;
+#end
+
+#foreach ($column in $columns)
+	public void set${column.attrName}($column.attrType $column.attrname) {this.$column.attrname = $column.attrname;}
+	public $column.attrType get${column.attrName}() {
+		return $column.attrname;
+	}
+#end
+}

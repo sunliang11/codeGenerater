@@ -1,0 +1,80 @@
+<table class="stable mt20" cellspacing="0" style="margin: auto">
+    <colgroup>
+        <col width="5%">
+        #foreach ($column in $columns)
+        <col width="10%">
+        #end
+        <col width="15%">
+    </colgroup>
+    <tbody>
+    <tr table-head="">
+        <th>序号</th>
+         #foreach ($column in $columns)
+        <th>${column.comments}</th>
+        #end
+        <th class="stab-br0">操作</th>
+    </tr>
+    <\#if pageInfo?? && pageInfo?has_content && pageInfo.list?has_content>
+        <input type="hidden" id="pageCount" value="${((pageInfo.totalRecords+pageInfo.pageSize -1)/pageInfo.pageSize)?int}">
+        <#list pageInfo.list as vo>
+            <tr>
+            <td>$\{vo_index+1}</td>
+             #foreach ($column in $columns)
+             <td>$\{vo.${column.attrname}!''}</td>
+             #end
+            <td>
+            <a href="javascript:void(0);" onClick="itemView('$\{vo.id!''}')">查看</a>
+            <a href="javascript:void(0);" onClick="editView('$\{vo.id!''}')">编辑</a>
+            </td>
+            </tr>
+        </#list>
+    <\#else>
+        <tr>
+            <td colspan="1">未查询到数据，请重新查询！</td>
+        </tr>
+    </\#if>
+    </tbody>
+</table>
+<\#if pageInfo?? && pageInfo.totalRecords??>
+    <#import "/common/pager.ftl" as q>
+    <@q.pager page=pageInfo.page pageSize=pageInfo.pageSize totalRecords=pageInfo.totalRecords toURL="${base}/${classname}/ajax/tableView.action"/>
+</\#if>
+
+<script type="application/javascript">
+    function itemView(id) {
+        var url = base + "/${classname}/ajax/itemView.action?id=" + id;
+        $("#listDiv").css("display", "none");
+        $("#itemDiv").css("display", "block");
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "html",
+            success: function (data) {
+                $("#itemDiv").html(data);
+            },
+            error: function (error) {
+                message.error("网络异常，请稍后再试！");
+            }
+        });
+    }
+
+    function editView(id) {
+        var url = base + "/${classname}/ajax/editView.action?id=" + id;
+        $("#listDiv").css("display", "none");
+        $("#editDiv").css("display", "block");
+
+        $.ajax({
+            url: url,
+            type: "GET",
+            dataType: "html",
+            success: function (data) {
+                $("#editDiv").html(data);
+            },
+            error: function (error) {
+                message.error("网络异常，请稍后再试！");
+            }
+        });
+    }
+
+</script>

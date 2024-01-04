@@ -1,0 +1,56 @@
+package ${package}.dao.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+@Entity(name = "${tableName}")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+public class ${className}Entity {
+#foreach ($column in $columns)
+#if($column.comments != '' )
+    /**
+     * $column.comments
+     */
+#end
+    private $column.attrType $column.attrname;
+#end
+
+#foreach ($column in $columns)
+	public void set${column.attrName}($column.attrType $column.attrname) {
+	#if($column.attrType =='String')	this.$column.attrname = $column.attrname == null ? null : ${column.attrname}.trim();
+	#else	this.$column.attrname = $column.attrname;
+	#end}
+
+	#if(${column.columnName} == ${pk.columnName})
+@Id
+@GeneratedValue(strategy = GenerationType.TABLE)
+	#end
+@Column(name = "${column.columnName}")
+	public $column.attrType get${column.attrName}() {
+		return $column.attrname;
+	}
+#end
+}
+
+

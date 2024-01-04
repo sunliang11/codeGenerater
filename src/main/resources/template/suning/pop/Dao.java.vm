@@ -1,0 +1,29 @@
+package ${package}.dao.mapper;
+
+import com.suning.framework.dal.pagination.PaginationResult;
+import com.suning.store.commons.pagination.Pageable;
+import com.suning.store.dal.annotation.DalMapper;
+import com.suning.store.dal.annotation.DalMethod;
+import com.suning.store.dal.base.DalBaseDao;
+import java.util.List;
+
+import ${package}.dao.entity.${className}Entity;
+import ${package}.service.vo.${className}VO;
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ * 
+ * @author ${author}
+ * @date ${datetime}
+ */
+@DalMapper("${tableName}")
+public interface ${className}Dao extends DalBaseDao<${className}Entity, ${pk.attrType}> {
+    @DalMethod(sqlId = "${tableName}.${classname}List", params = "vo")
+    PaginationResult<${className}Entity> pageList(${className}VO vo, Pageable pageable);
+
+    @DalMethod(sqlId = "${tableName}.${classname}List", params = "vo")
+    List<${className}Entity> list(${className}VO vo);
+}
+

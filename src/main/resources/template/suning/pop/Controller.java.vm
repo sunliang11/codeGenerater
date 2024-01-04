@@ -1,0 +1,128 @@
+package ${package}.controller;
+
+import ${package}.base.infra.BaseController;
+import ${package}.base.infra.ErrorCode;
+import ${package}.base.infra.model.ActionResult;
+import ${package}.base.infra.util.bean.MapTransUtil;
+import ${package}.base.infra.util.excel.BaseExportView;
+
+import ${package}.service.${className}Service;
+import ${package}.service.vo.${className}VO;
+
+import com.suning.zytcl.common.page.GenericPage;
+import com.suning.zytcl.common.page.PageList;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+
+
+/**
+    #if(${comments} && ${comments} != '')
+     * ${comments}
+    #end
+ *
+ * @author ${author}
+ * @date   ${datetime}
+ */
+@Controller
+@RequestMapping("/${classname}")
+public class ${className}Controller extends BaseController {
+
+    private static final String MENU_FLAG = "bill";
+    private static final String SECD_MENU = "1";
+    private static final String THIR_MENU = "1";
+
+    @Autowired
+    private ${className}Service ${classname}Service;
+
+    @RequestMapping("/indexView.action")
+    public String indexView(HttpServletRequest request, ModelMap modelMap) {
+        modelMap.put("menuFlag", MENU_FLAG);
+        modelMap.put("secdMenu", SECD_MENU);
+        modelMap.put("thirMenu", THIR_MENU);
+        return "/views/${classname}/${classname}Index.ftl";
+    }
+
+    @RequestMapping("/ajax/tableView.action")
+    public String tableView(HttpServletRequest request, @RequestBody GenericPage<${className}VO> condition, ModelMap modelMap) {
+        PageList<${className}VO> pageList = ${classname}Service.pageList(condition);
+        modelMap.put("pageInfo", pageList);
+        return "/views/${classname}/${classname}Table.ftl";
+    }
+
+    @RequestMapping("/ajax/editView.action")
+    public String editView(${pk.attrType} ${pk.attrname}, ModelMap modelMap, HttpServletRequest request) {
+            ${className}VO ${classname}VO = ${classname}Service.item(id);
+        if (${classname}VO == null) {
+                ${classname}VO = new ${className}VO();
+        }
+        modelMap.put("${classname}VO", ${classname}VO);
+        Boolean isEdit = ${classname}VO != null;
+        modelMap.put("isEdit", isEdit);
+
+        return "/views/${classname}/${classname}Edit.ftl";
+    }
+
+    @RequestMapping("/ajax/itemView.action")
+    public String itemView(${pk.attrType} ${pk.attrname}, ModelMap modelMap) {
+            ${className}VO ${classname}VO = ${classname}Service.item(id);
+        modelMap.put("${classname}VO", ${classname}VO);
+        return "/views/${classname}/${classname}Item.ftl";
+    }
+
+    @RequestMapping(value = "/exportList.action")
+    @ResponseBody
+    public ModelAndView exportList(HttpServletRequest request) {
+        ${className}VO filter = MapTransUtil.requestParam2Object(request, ${className}VO.class);
+
+        String excelName = "${comments}列表.xls";
+        String[] rowNames = new String[]{
+            #foreach ($column in $columns)
+                    "${column.comments}"#if($velocityCount != $columns.size()), #end
+
+            #end
+        };
+        List<${className}VO> voList = ${classname}Service.voList(filter);
+
+        List<List<Object>> data = new ArrayList<List<Object>>();
+
+        for (${className}VO vo : voList) {
+            List<Object> entity = Arrays.asList(new Object[]{
+                #foreach ($column in $columns)
+                        vo.get${column.attrName}()#if($velocityCount != $columns.size()), #end
+
+                #end
+            });
+            data.add(entity);
+        }
+
+        BaseExportView exportView = new BaseExportView(excelName, rowNames, data);
+        return new ModelAndView(exportView);
+    }
+
+    /**
+     * 保存
+     */
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public ActionResult save(@RequestBody ${className}VO ${classname}VO) {
+        ${pk.attrType} id = ${classname}VO.get${pk.attrName}();
+        ErrorCode code;
+        if (id == null) {
+            code = ${classname}Service.insert(${classname}VO);
+        } else {
+            code = ${classname}Service.update(${classname}VO);
+        }
+
+        return actionResult(code);
+    }
+
+}

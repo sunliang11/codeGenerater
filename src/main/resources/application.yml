@@ -1,0 +1,50 @@
+# Tomcat
+server:
+    tomcat:
+        max-threads: 10
+        min-spare-threads: 10
+    port: 8083
+
+# mysql
+spring:
+    datasource:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: com.mysql.jdbc.Driver
+      #在此处修改数据库地址
+      url: jdbc:mysql://10.250.15.12:3306/kmc?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&autoReconnectForPools=true&allowMultiQueries=true&useSSL=false
+      username: ceshi
+      password: wsaq12#$
+
+
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+    resources:
+            static-locations: classpath:/static/,classpath:/views/
+
+mybatis:
+    mapperLocations: classpath:mapper/**/*.xml
+
+#RestTemplate的超时时间
+restTemplate:
+  connection-request-timeout: 10000
+  connect-timeout: 10000
+  read-timeout: 10000
+
+# 使用者相关配置
+#packageName: com.bkrwin.elevator
+#author: cjf
+#email: cjf@qq.com
+#tablePrefix : t_
+#dbType: mysql
+packageName: com.haiziwang.publish
+author: root
+email:
+tablePrefix : t_
+dbType: mysql
+templatePackage: chuangjiyun/ims
+
+logging:
+  file: generLog.log
+  level:
+    root: info

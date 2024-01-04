@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.haiziwang.gen.code.dao.mapper.OracleGeneratorMapper">
+	<select id="queryList" resultType="map">
+		SELECT * FROM(
+		select ROWNUM rn,A.* from (
+		select  t.table_name as "tableName" ,'' "engine",c.comments "tableComment",o.CREATED "createTime"
+		from USER_TABLES t
+		left join USER_TAB_COMMENTS c on t.TABLE_NAME = c.TABLE_NAME
+		left join dba_objects o on t.TABLE_NAME = o.object_name
+		<if test="tableName != null and tableName.trim() != ''">
+			and t.table_name like concat(concat('%', #{tableName,jdbcType=VARCHAR}), '%')
+		</if>
+		where o.OWNER = (select username from user_users)
+		order by o.created desc
+		) A
+		<if test="limit != null">
+			<![CDATA[
+          WHERE ROWNUM <= #{rowNoEnd}
+        ]]>
+		</if>)
+		<if test="limit != null">
+			<![CDATA[
+         WHERE RN > #{rowNoStart}
+        ]]>
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(1) from user_tables where  1=1
+		<if test="tableName != null and tableName.trim() != ''">
+			and table_name like concat(concat('%', #{tableName,jdbcType=VARCHAR}), '%')
+		</if>
+	</select>
+
+	<select id="queryTable" resultType="map">
+		select t.table_name "tableName" ,'' "engine",c.comments "tableComment",o.CREATED "createTime"
+		from USER_TABLES t
+		left join USER_TAB_COMMENTS c on t.TABLE_NAME = c.TABLE_NAME
+		left join dba_objects o on t.TABLE_NAME = o.object_name
+		where t.table_name =  #{tableName}
+		and o.OWNER = (select username from user_users)
+	</select>
+
+	<select id="queryColumns" resultType="map">
+        select
+        c.column_name "columnName",
+        c.data_type "dataType",
+        to_char(c.DATA_PRECISION) "numberLen",
+		to_char(c.DATA_SCALE) "numberScale",
+		(select m.comments from user_col_comments m
+        where m.column_name = c.column_name and m.table_name = c.table_name
+        ) "columnComment",
+        (select case ct.constraint_type when 'P' then 'PRI' else '' end  from user_constraints ct
+        inner join user_cons_columns cc on ct.constraint_name = cc.constraint_name
+        where cc.column_name = c.column_name and cc.table_name = c.table_name and ct.constraint_type='P'
+        ) "columnKey"
+        from user_tab_columns  c
+        where c.table_name = #{tableName}
+        ORDER BY column_id
+	</select>
+
+</mapper>

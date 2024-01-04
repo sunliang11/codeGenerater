@@ -1,0 +1,30 @@
+package ${package}.service.api;
+
+import ${package}.common.apo.vo.${className}VO;
+import ${package}.common.apo.querybean.${className}QueryBean;
+import ${package}.common.constant.UnionError;
+import ${package}.common.dbo.${className}DBO;
+import net.jplugin.core.das.api.PageQueryResult;
+import ${package}.common.util.bean.FunctionResult;
+
+/**
+#if(${comments} && ${comments} != '')
+* ${comments}
+#end
+*
+* @author ${author}
+* @date ${datetime}
+*/
+public interface I${className}Service {
+
+    PageQueryResult<${className}VO> queryByPage(${className}QueryBean condition);
+
+    FunctionResult<${className}VO> item(${pk.attrType} ${pk.attrname});
+
+    UnionError add(${className}VO ${classname}VO);
+
+    UnionError edit(${className}VO ${classname}VO);
+
+    UnionError delete(${pk.attrType} ${pk.attrname});
+
+}

@@ -1,0 +1,21 @@
+package ${package}.dao.mapper;
+
+import ${package}.dao.entity.${className}DO;
+import ${package}.service.VO.${className}VO;
+import ${package}.dao.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+
+/**
+#if(${comments} && ${comments} != '')
+ * ${comments}
+#end
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Mapper
+public interface ${className}Mapper extends BaseMapper<${className}VO,${className}DO> {
+	
+}
